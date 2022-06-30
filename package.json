@@ -1,7 +1,7 @@
 {
   "name": "mbgsdapp",
   "version": "0.1.0",
-  "homepage": "https://gitname.github.io/stakingosisworld",
+  "homepage": "https://github.com/cikejoae/stakingosisworld",
   "private": true,
   "dependencies": {
     "@alch/alchemy-web3": "^1.4.4",
@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "gh-pages": "^4.0.0",
+    "netlify-cli": "^10.7.0",
     "resolve-url-loader": "^5.0.0"
   },
   "browser": {
