@@ -21,92 +21,92 @@ var web3 = null;
 
 const Web3Alc = createAlchemyWeb3("https://eth-mainnet.g.alchemy.com/v2/W3CAcUSVv-z7zxqoiF3coq_6wUAXcsl8");
 
-const moralisapikey = "2VBV4vaCLiuGu6Vu7epXKlFItGe3jSPON8WV4CrXKYaNBEazEUrf1xwHxbrIo1oM";
+const moralisapikey = "rmo6dN3ukVlyFvERnzAQkjxYW3DQUO4dZIkLgQKvPKdCZ8ZQ3gAzdcnhbT3L5WGI";
 const polygonscanapikey = "JAR6HQQDTVZ3UQIHCUFHJ7MV2M5E6V2FFE";
 
 const providerOptions = {
-  binancechainwallet: {
-    package: true
-  },
-  walletconnect: {
-    package: WalletConnectProvider,
-    options: {
-      infuraId: "e3596064a2434b66b3497af106f27886"
-    }
-  },
-  walletlink: {
-    package: WalletLink,
-    options: {
-      appName: "MBG Staking dAPP",
-      infuraId: "e3596064a2434b66b3497af106f27886",
-      rpc: "",
-      chainId: 4,
-      appLogoUrl: null,
-      darkMode: true
-    }
-  },
+  // binancechainwallet: {
+  //   package: true
+  // },
+  // walletconnect: {
+  //   package: WalletConnectProvider,
+  //   options: {
+  //     infuraId: "e3596064a2434b66b3497af106f27886"
+  //   }
+  // },
+  // walletlink: {
+  //   package: WalletLink,
+  //   options: {
+  //     appName: "MBG Staking dAPP",
+  //     infuraId: "e3596064a2434b66b3497af106f27886",
+  //     rpc: "https://polygon-mainnet.public.blastapi.io",
+  //     chainId: 137,
+  //     appLogoUrl: null,
+  //     darkMode: true
+  //   }
+  // },s
 };
 
 const web3Modal = new Web3Modal({
-	network: "mainnet",
-	theme: "dark",
-	cacheProvider: false,
-	providerOptions 
-  });
+  network: "mainnet",
+  theme: "dark",
+  cacheProvider: false,
+  providerOptions
+});
 
-  class App extends Component {
-    constructor() {
-      super();
-      this.state = {
-        balance: [],
-        rawearn: [],
-      };
-    }
-  
-	handleModal(){  
-		this.setState({show:!this.state.show})  
-	} 
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      balance: [],
+      rawearn: [],
+    };
+  }
 
-	handleNFT(nftamount) {
-		this.setState({outvalue:nftamount.target.value});
-  	}
+  handleModal() {
+    this.setState({ show:!this.state.show })
+  }
 
-    async componentDidMount() {
-		
-      await axios.get((polygonscanapi + `?module=stats&action=tokensupply&contractaddress=${NFTCONTRACT}&apikey=${polygonscanapikey}`))
+  handleNFT(nftamount) {
+    this.setState({ outvalue: nftamount.target.value });
+  }
+
+  async componentDidMount() {
+
+    await axios.get((polygonscanapi + `?module=stats&action=tokensupply&contractaddress=${NFTCONTRACT}&apikey=${polygonscanapikey}`))
       .then(outputa => {
-              this.setState({
-                  balance:outputa.data
-              })
-              console.log(outputa.data)
-          })
-      let config = {'X-API-Key': moralisapikey, 'accept': 'application/json'};
-      await axios.get((moralisapi + `/nft/${NFTCONTRACT}/owners?chain=polygon&format=decimal`), {headers: config})
+        this.setState({
+          balance: outputa.data
+        })
+        console.log(outputa.data)
+      })
+    let config = { 'X-API-Key': moralisapikey, 'accept': 'application/json' };
+    await axios.get((moralisapi + `/nft/${NFTCONTRACT}/owners?chain=polygon&format=decimal`), { headers: config })
       .then(outputb => {
         const { result } = outputb.data
-              this.setState({
-                  nftdata:result
-              })
-              console.log(outputb.data)
-          })
-    }
+        this.setState({
+          nftdata: result
+        })
+        console.log(outputb.data)
+      })
+  }
 
 
   render() {
     const { balance } = this.state;
+    const {nftdata} = this.state;
     const { outvalue } = this.state;
-
 
     const sleep = (milliseconds) => {
       return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
-    const expectedBlockTime = 10000;
+    const expectedBlockTime = 100000;
 
     async function connectwallet() {
       var provider = await web3Modal.connect();
       web3 = new Web3(provider);
-      await provider.request({ method: 'eth_accounts' })
-      var accounts = await web3.eth.getAccounts();
+      await provider.request({ method:'eth_requestAccounts'});
+      var accounts = await web3.eth.requestAccounts();
       account = accounts[0];
       document.getElementById('wallet-address').textContent = account;
       contract = new web3.eth.Contract(ABI, NFTCONTRACT);
@@ -123,7 +123,7 @@ const web3Modal = new Web3Modal({
         var array = Array.from(rawearn.map(Number));
         console.log(array);
         array.forEach(async (item) => {
-          var earned = String(item).split(",")[0];
+          var earned = item.toPrecision(22).split('.')[0]
           var earnedrwd = Web3.utils.fromWei(earned);
           var rewardx = Number(earnedrwd).toFixed(2);
           var numrwd = Number(rewardx);
@@ -147,14 +147,15 @@ const web3Modal = new Web3Modal({
       }
       return processArray([rwdArray]);
     }
-  
+
     async function verify() {
       var getstakednfts = await vaultcontract.methods.tokensOfOwner(account).call();
       document.getElementById('yournfts').textContent = getstakednfts;
       var getbalance = Number(await vaultcontract.methods.balanceOf(account).call());
       document.getElementById('stakedbalance').textContent = getbalance;
+      console.log(getstakednfts);
     }
-  
+
     async function enable() {
       contract.methods.setApprovalForAll(STAKINGCONTRACT, true).send({ from: account });
     }
@@ -167,7 +168,7 @@ const web3Modal = new Web3Modal({
         var rawearn = await vaultcontract.methods.earningInfo(account, [id]).call();
         var array = Array.from(rawearn.map(Number));
         array.forEach(async (item) => {
-          var earned = String(item).split(",")[0];
+          var earned = item.toPrecision(22).split('.')[0];
           var earnedrwd = Web3.utils.fromWei(earned);
           var rewardx = Number(earnedrwd).toFixed(2);
           var numrwd = Number(rewardx);
@@ -235,19 +236,21 @@ const web3Modal = new Web3Modal({
       var mintRate = Number(await contract.methods.cost().call());
       var totalAmount = mintRate * _mintAmount;
       await Web3Alc.eth.getMaxPriorityFeePerGas().then((tip) => {
-          Web3Alc.eth.getBlock('pending').then((block) => {
-              var baseFee = Number(block.baseFeePerGas);
-              var maxPriority = Number(tip);
-              var maxFee = baseFee + maxPriority
+        Web3Alc.eth.getBlock('pending').then((block) => {
+          var baseFee = Number(block.baseFeePerGas);
+          var maxPriority = Number(tip);
+          var maxFee = baseFee + maxPriority
           contract.methods.mint(account, _mintAmount)
-              .send({ from: account,
-                value: String(totalAmount),
-                maxFeePerGas: maxFee,
-                maxPriorityFeePerGas: maxPriority});
-          });
+            .send({
+              from: account,
+              value: String(totalAmount),
+              maxFeePerGas: maxFee,
+              maxPriorityFeePerGas: maxPriority
+            });
+        });
       })
     }
-  
+
     async function mint0() {
       var _pid = "0";
       var erc20address = await contract.methods.getCryptotoken(_pid).call();
@@ -261,14 +264,15 @@ const web3Modal = new Web3Modal({
           var maxPriority = Number(tip);
           var maxFee = maxPriority + baseFee;
           currency.methods.approve(NFTCONTRACT, String(totalAmount))
+            .send({
+              from: account
+            })
+            .then(currency.methods.transfer(NFTCONTRACT, String(totalAmount))
               .send({
-                from: account})
-                .then(currency.methods.transfer(NFTCONTRACT, String(totalAmount))
-                .send({
-                  from: account,
-                  maxFeePerGas: maxFee,
-                  maxPriorityFeePerGas: maxPriority
-                },
+                from: account,
+                maxFeePerGas: maxFee,
+                maxPriorityFeePerGas: maxPriority
+              },
                 async function (error, transactionHash) {
                   console.log("Transfer Submitted, Hash: ", transactionHash)
                   let transactionReceipt = null
@@ -285,39 +289,39 @@ const web3Modal = new Web3Modal({
                   }
                   console.log("Transfer Complete", transactionReceipt);
                   contract.methods.mintpid(account, _mintAmount, _pid)
-                  .send({
-                    from: account,
-                    maxFeePerGas: maxFee,
-                    maxPriorityFeePerGas: maxPriority
-                  });
-              }));
+                    .send({
+                      from: account,
+                      maxFeePerGas: maxFee,
+                      maxPriorityFeePerGas: maxPriority
+                    });
+                }));
+        });
       });
-    });
-  }
-  const refreshPage = ()=>{
-    window.location.reload();  
-  }
-  
+    }
+    const refreshPage = () => {
+      window.location.reload();
+    }
+
     return (
-      <div className="App">
-        <body>
-          <nav class="py-2 bg-black border-bottom navbarglow">
-            <div class="container d-flex align-content-center flex-wrap"> <img src="apotheosis.png" width="7%" ></img>
-              <ul class="nav me-auto">
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="#" class="nav-link link-light px-2 active" aria-current="page">Dashboard</a></li>
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="#" class="nav-link link-light px-2">List</a></li>
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="#" class="nav-link link-light px-2">NFTs</a></li>
-                {/* <li class="nav-item d-flex align-content-center flex-wrap"><a href="#" class="nav-link link-light px-2">Bridge</a></li> */}
+      <body class="container py-2 bg-black">
+        <div className="App nftapp bg-black">
+
+          <nav class="container py-3 bg-black">
+            <div class="container d-flex align-content-center flex-wrap bg-black"> <img src="apotheosis.png" width="" height="38" class="d-inline-block align-top" alt=""></img> 
+              <ul class="nav me-auto align-content-right bg-black">
+                <li class="nav-item d-flex align-content-center flex-wrap"><a href="." class="nav-link link-light px-2 active" aria-current="page">Dashboard</a></li>
+                <li class="nav-item d-flex align-content-center flex-wrap"><a href="#Vault" class="nav-link link-light px-2">Vault</a></li>
+                <li class="nav-item d-flex align-content-center flex-wrap"><a href="#NFT" class="nav-link link-light px-2">NFTs</a></li>
                 <li class="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world" target="_blank" rel="noreferrer" class="nav-link link-light px-2">OSIS</a></li>
               </ul>
               <ul class="nav">
                 <li class="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world/login" target="_blank" rel="noreferrer" class="nav-link link-light px-3">GET OSIS</a></li>
-                {/* <li class="nav-item d-flex align-content-center flex-wrap"><a href="#" class="nav-link link-light px-2">Sign up</a></li> */}
-                <input id="connectbtn" type="button" className="connectbutton" onClick={connectwallet} style={{}} value="Connect Your Wallet" />
+                <input id="connectbtn" type="button" className="connectbutton" onClick={connectwallet} style={{class: "nav-item d-flex align-content-center flex-wrap"}} value="Connect Your Wallet" />
+                {/* <li class="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world/login" target="_blank" rel="noreferrer" class="nav-link link-light px-3">GET OSIS</a></li> */}
               </ul>
             </div>
           </nav>
-          <div className='container'>
+          <div className='container, bg-black'>
             <div className='col, py-4'>
               <body className='nftminter'>
                 <form>
@@ -352,42 +356,42 @@ const web3Modal = new Web3Modal({
                   </ButtonGroup> */}
                   {/* <h6 className="pt-2" style={{ fontFamily: "SF Pro Display", fontWeight: "300", fontSize: "18px" }}>Buy with your preferred crypto!</h6> */}
                   {/* <div className="row px-2 pb-2 row-style"> */}
-                    {/* <div className="col "> */}
-                      {/* <Button className="button-style" onClick={mint0} style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #4ac0e7" }}>
+                  {/* <div className="col "> */}
+                  {/* <Button className="button-style" onClick={mint0} style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #4ac0e7" }}>
                         <img src={"n2dr-logo.png"} width="100%" />
                       </Button> */}
-                    {/* </div> */}
-                    {/* <div className="col"> */}
-                      {/* <Button className="button-style" style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #4ac0e7" }}>
+                  {/* </div> */}
+                  {/* <div className="col"> */}
+                  {/* <Button className="button-style" style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #4ac0e7" }}>
                         <img src="usdt.png" width="70%" />
                       </Button> */}
-                    {/* </div> */}
-                    {/* <div className="col"> */}
-                      {/* <Button className="button-style" onClick={mintnative} style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #4ac0e7" }}>
+                  {/* </div> */}
+                  {/* <div className="col"> */}
+                  {/* <Button className="button-style" onClick={mintnative} style={{ border: "0.2px", borderRadius: "14px", boxShadow: "1px 1px 5px #4ac0e7" }}>
                         <img src="matic.png" width="70%" />
                       </Button> */}
-                    {/* </div> */}
-                    {/* <div> */}
-                      {/* <div id='txout' style={{ color: "#39FF14", marginTop: "5px", fontSize: '20px', fontWeight: '500', textShadow: "1px 1px 2px #000000" }}>
+                  {/* </div> */}
+                  {/* <div> */}
+                  {/* <div id='txout' style={{ color: "#39FF14", marginTop: "5px", fontSize: '20px', fontWeight: '500', textShadow: "1px 1px 2px #000000" }}>
                         <p style={{ fontSize: "20px" }}>Transfer Status</p>
                       </div> */}
-                    {/* </div> */}
+                  {/* </div> */}
                   {/* </div> */}
                 </form>
               </body>
             </div>
           </div>
-          <div className='col'>
-            <body className='nftstaker border-1'>
+          <div className='col bg-black'>
+            <body className='nftstaker border-0 bg-black'>
               <form style={{ fontFamily: "Avenir LT Std" }} >
-              <h2 className="pt-2" style={{ fontFamily: "Avenir LT Std", borderRadius: '14px', fontWeight: "400", color: "#ffffff", fontSize: "25px" }}>MBG Staking Vault </h2>
+                <h2 className="pt-2" style={{ fontFamily: "Avenir LT Std", borderRadius: '14px', fontWeight: "400", color: "#ffffff", fontSize: "25px" }}id="Vault">MBG Staking Vault </h2>
                 <h6 style={{ fontWeight: "300", color: "#ffffff", fontFamily: "Avenir LT Std" }}>First time staking?</h6>
-                <Button className="btn" onClick={connectwallet} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} >Authorize Your Wallet</Button>
-                <div className="row px-3 pt-1">
+                <Button className="btn" onClick={enable} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} >Authorize Your Wallet</Button>
+                <div className="row mt-2 px-3 pt-1">
                   <div className="col-sm-4 col-center-block">
                     <form class="stakingrewards" style={{ borderRadius: "25px", boxShadow: "1px 1px 15px #4ac0e7" }}>
                       <h5 style={{ color: "#FFFFFF", fontWeight: '300' }}>Your Vault Activity</h5>
-                      <h6 style={{ color: "#FFFFFF" }}>Verify Staked Amount</h6>
+                      <h5 style={{ color: "#FFFFFF" }}>Verify Staked Amount</h5>
                       <Button onClick={verify} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} >Verify</Button>
                       <table className='table mt-3 mb-5 px-3 table-dark'>
                         <tr>
@@ -401,30 +405,25 @@ const web3Modal = new Web3Modal({
                           </td>
                         </tr>
                         <tr>
-                          <td style={{ fontSize: "19px" }}>Unstake All Staked NFTs <br></br>
+                          <td style={{ fontSize: "19px" }}>Unstake All Staked NFTs<br></br>
                             <Button onClick={unstakeall} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} className='mb-3' >Unstake All</Button>
                           </td>
                         </tr>
                       </table>
                     </form>
                   </div>
-                  <img className= "col-sm-3 col-center-block mb-5 mb-1 pb-1" src="metabadges.png" />
+                  <img className="col-sm-3 col-center-block mb-5 mb-1" src="metabadges.png" />
                   <div className="col-sm-4 col-center-block">
                     <form className='stakingrewards' style={{ borderRadius: "25px", boxShadow: "1px 1px 15px #4ac0e7", fontFamily: "Avenir LT Std" }}>
-                      <h5 className="pt-3" style={{ color: "#FFFFFF", fontWeight: '300' }}> Staking Rewards</h5>
-                      <div>
-                        <h1 className="pt-2" style={{ fontWeight: "30", color: "#ffffff", fontFamily: "Avenir LT Std" }}> </h1>
-                      </div>
+                    <h5 style={{ color: "#FFFFFF", fontWeight: '300' }}>Your Rewards Activity</h5>
+                      <h5 className="" style={{ color: "#FFFFFF", fontWeight: '300' }}> Staking Rewards</h5>
                       <Button onClick={rewardinfo} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} >Earned MBG Rewards</Button>
-                      <div>
-                      <h1 className="pt-2" style={{ fontWeight: "30", color: "#ffffff", fontFamily: "Avenir LT Std" }}> </h1>
-                    </div>
-                      <div id='earned' style={{ color: "#39FF14", marginTop: "5px", fontSize: '25px', fontWeight: '500', textShadow: "1px 1px 2px #000000" }}><p style={{ fontSize: "20px" }}>Earned Tokens</p></div>
+                      <div id='earned' style={{ color: "#6db647", marginTop: "10px", fontSize: '25px', fontWeight: '500', textShadow: "1px 1px 2px #000000" }}><p style={{ fontSize: "20px" }}>Earned Tokens</p></div>
                       <div className='col12 mt-2'>
                         <div className="pt-2" style={{ color: 'white' }}>Claim Rewards</div>
                         <div>
-                      <h1 className="pt-2" style={{ fontWeight: "30", color: "#ffffff", fontFamily: "Avenir LT Std" }}> </h1>
-                    </div>
+                          <h1 className="pt-2" style={{ fontWeight: "30", color: "#ffffff", fontFamily: "Avenir LT Std" }}> </h1>
+                        </div>
                         <Button onClick={claimit} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} className="mb-4">Claim</Button>
                       </div>
                     </form>
@@ -440,7 +439,7 @@ const web3Modal = new Web3Modal({
                         <tr>
                           <th scope="col">Collection</th>
                           <th scope="col">Rewards Per Day</th>
-                          <th scope="col">Exchangeable Items</th>
+                          {/* <th scope="col">Exchangeable Items</th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -449,77 +448,77 @@ const web3Modal = new Web3Modal({
                           <td class="amount" data-test-id="rewards-summary-ads">
                             <span class="amount">2000</span>&nbsp;<span class="currency">MBG</span>
                           </td>
-                          <td class="exchange">
+                          {/* <td class="exchange">
                             <span class="amount">2</span>&nbsp;<span class="currency">TBD</span>
-                          </td>
+                          </td> */}
                         </tr>
                         <tr>
                           <td>Rare MetaBadge</td>
                           <td class="amount" data-test-id="rewards-summary-ac">
-                            <span class="amount">4000</span>&nbsp;<span class="currency">MBG</span>
+                            <span class="amount">2000</span>&nbsp;<span class="currency">MBG</span>
                           </td>
-                          <td class="exchange"><span class="amount">10</span>&nbsp;<span class="currency">TBD</span>
-                          </td>
+                          {/* <td class="exchange"><span class="amount">10</span>&nbsp;<span class="currency">TBD</span>
+                          </td> */}
                         </tr>
                         <tr className='stakegoldeffect'>
                           <td>Super Rare MetaBadge</td>
-                          <td class="amount" data-test-id="rewards-summary-one-time"><span class="amount">4000</span>&nbsp;<span class="currency">MBG</span>
+                          <td class="amount" data-test-id="rewards-summary-one-time"><span class="amount">2000</span>&nbsp;<span class="currency">MBG</span>
                           </td>
-                          <td class="exchange">
+                          {/* <td class="exchange">
                             <span class="amount">TBD or </span>
                             <span class="currency">TBD</span>
-                          </td>
+                          </td> */}
                         </tr>
                       </tbody>
                     </table>
-                    <div class="header">
-                      <div style={{ fontSize: '25px', borderRadius: '14px', color: "#ffffff", fontWeight: '300' }}>MBG Token Stake Farms</div>
-                      <h1>
-                      </h1>
-                      <table className='table table-bordered table-dark' style={{ borderRadius: '14px', boxShadow: "1px 1px 15px #4ac0e7" }} >
-                        <thead className='thead-light'>
-                          <tr>
-                            <th scope="col">Farm Pools</th>
-                            <th scope="col">Harvest Daily Earnings</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>Stake MBG to Earn MBG</td>
-                            <td class="amount" data-test-id="rewards-summary-ads">
-                              <span class="amount">0.01</span>&nbsp;<span class="currency">Per MBG</span>
-                            </td>
-                          </tr>
+                    {/* <div class="header"> */}
+                      {/* <div style={{ fontSize: '25px', borderRadius: '14px', color: "#ffffff", fontWeight: '300' }}>MBG Token Stake Farms</div> */}
+                      {/* <h1> */}
+                      {/* </h1> */}
+                      {/* <table className='table table-bordered table-dark' style={{ borderRadius: '14px', boxShadow: "1px 1px 15px #4ac0e7" }} > */}
+                        {/* <thead className='thead-light'> */}
+                          {/* <tr> */}
+                            {/* <td>MBG Staking Farm Pools</td> */}
+                            {/* <td>Harvest Daily Earnings</td> */}
+                          {/* </tr> */}
+                        {/* </thead> */}
+                        {/* <tbody> */}
+                          {/* <tr> */}
+                            {/* <td>Stake MBG to Earn MBG</td> */}
+                            {/* <td class="amount" data-test-id="rewards-summary-ads"> */}
+                              {/* <span class="amount">0.001</span>&nbsp;<span class="currency">Per Staked MBG</span> */}
+                            {/* </td> */}
+                          {/* </tr> */}
                           {/* <tr>
                             <td>Stake MBG to Earn MBG+</td>
                             <td class="amount" data-test-id="rewards-summary-ac">
                               <span class="amount">0.005</span>&nbsp;<span class="currency">Per MBG</span>
                             </td>
                           </tr> */}
-                        </tbody>
-                      </table>
-                    </div>
+                        {/* </tbody> */}
+                      {/* </table> */}
+                    {/* </div> */}
                   </div>
                 </div>
               </form>
             </body>
           </div>
-        </body>
-        <div className='row nftportal mt-3'>
-        <div className='col mt-4 ml-3'>
-        <img src="polygon.png" width={'60%'}></img>
-      </div>
-      <div className='col'>
-        <h1 className='n2dtitlestyle mt-3'>Your NFT Portal</h1>
-      <Button onClick={refreshPage} style={{ backgroundColor: "#000000", boxShadow: "1px 1px 15px #4ac0e7" }}>Refresh NFT Portal</Button>
-      </div>
-      <div className='col mt-3 mr-5'>
-      <img src="ethereum.png" width={'60%'}></img>
-      </div>
-      </div>
-      </div>
-    );
-  };
-}
 
+          <div className='col mt-3 bg-black'id="NFT">
+            <div className='col mt-3 ml-3 bg-black'>
+              <img src="polygon.png" width={'20%'}></img>
+            </div>
+            <div className='col bg-black'>
+              <h1 className='n2dtitlestyle mb-3 mt-3 bg-black'>Your NFT Portal</h1>
+              <Button onClick={refreshPage} style={{ backgroundColor: "#000000", boxShadow: "1px 1px 15px #4ac0e7" }}>Refresh NFT Portal</Button>
+            </div>
+            <div className='col mt-3 mr-5 bg-black'>
+              {/* <img src="./ethereum.png" width={'20%'}></img> */}
+            </div>
+          </div>
+        </div>
+      </body>
+    )
+  }
+}
 export default App;

@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT LICENSE
 
-pragma solidity 0.8.4;
+pragma solidity >=0.8.6;
 
-import "https://github.com/cikejoae/mbgstaking/blob/main/MetaBadgeCoins.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "./MetaBadgeCoins.sol";
+import "./Metabadge.sol";
 
-
-contract NFTStaking is Ownable, IERC721Receiver {
+contract MBGStaking is Ownable, IERC721Receiver {
 
   uint256 public totalStaked;
   
@@ -23,13 +21,13 @@ contract NFTStaking is Ownable, IERC721Receiver {
   event Claimed(address owner, uint256 amount);
 
   // reference to the Block NFT contract
-  ERC721Enumerable nft;
+  MetaBadge nft;
   MetaBadgeCoins token;
 
   // maps tokenId to stake
   mapping(uint256 => Stake) public vault; 
 
-   constructor(ERC721Enumerable _nft, MetaBadgeCoins _token) { 
+   constructor(MetaBadge _nft, MetaBadgeCoins _token) { 
     nft = _nft;
     token = _token;
   }
@@ -82,22 +80,22 @@ contract NFTStaking is Ownable, IERC721Receiver {
   function _claim(address account, uint256[] calldata tokenIds, bool _unstake) internal {
     uint256 tokenId;
     uint256 earned = 0;
+     uint256 rewardmath = 0;
 
     for (uint i = 0; i < tokenIds.length; i++) {
       tokenId = tokenIds[i];
       Stake memory staked = vault[tokenId];
       require(staked.owner == account, "not an owner");
       uint256 stakedAt = staked.timestamp;
-      earned += 100000 ether * (block.timestamp - stakedAt) / 1 days;
+      rewardmath = 200000 ether * (block.timestamp - stakedAt) / 86400 ;
+      earned = rewardmath / 200000;
       vault[tokenId] = Stake({
         owner: account,
         tokenId: uint24(tokenId),
         timestamp: uint48(block.timestamp)
       });
-
     }
     if (earned > 0) {
-      earned = earned / 10;
       token.mint(account, earned);
     }
     if (_unstake) {
@@ -106,20 +104,27 @@ contract NFTStaking is Ownable, IERC721Receiver {
     emit Claimed(account, earned);
   }
 
-  function earningInfo(uint256[] calldata tokenIds) external view returns (uint256[2] memory info) {
+  function earningInfo(address account, uint256[] calldata tokenIds) external view returns (uint256[1] memory info) {
      uint256 tokenId;
-     uint256 totalScore = 0;
      uint256 earned = 0;
+     uint256 rewardmath = 0;
+
+    for (uint i = 0; i < tokenIds.length; i++) {
+      tokenId = tokenIds[i];
       Stake memory staked = vault[tokenId];
+      require(staked.owner == account, "not an owner");
       uint256 stakedAt = staked.timestamp;
-      earned += 100000 ether * (block.timestamp - stakedAt) / 1 days;
-    uint256 earnRatePerSecond = totalScore * 1 ether / 1 days;
-    earnRatePerSecond = earnRatePerSecond / 100000;
-    // earned, earnRatePerSecond
-    return [earned, earnRatePerSecond];
-  }
+      rewardmath = 2000000 ether * (block.timestamp - stakedAt) / 86400;
+      earned = rewardmath / 2000000;
+
+    }
+    if (earned > 0) {
+      return [earned];
+    }
+}
 
   // should never be used inside of transaction because of gas fee
+    // should never be used inside of transaction because of gas fee
   function balanceOf(address account) public view returns (uint256) {
     uint256 balance = 0;
     uint256 supply = nft.totalSupply();
@@ -131,7 +136,7 @@ contract NFTStaking is Ownable, IERC721Receiver {
     return balance;
   }
 
-  // should never be used inside of transaction because of gas fee
+    // should never be used inside of transaction because of gas fee
   function tokensOfOwner(address account) public view returns (uint256[] memory ownerTokens) {
 
     uint256 supply = nft.totalSupply();
