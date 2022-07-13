@@ -64,7 +64,7 @@ class App extends Component {
   }
 
   handleModal() {
-    this.setState({ show:!this.state.show })
+    this.setState({ show: !this.state.show })
   }
 
   handleNFT(nftamount) {
@@ -94,7 +94,7 @@ class App extends Component {
 
   render() {
     const { balance } = this.state;
-    const {nftdata} = this.state;
+    const { nftdata } = this.state;
     const { outvalue } = this.state;
 
     const sleep = (milliseconds) => {
@@ -105,7 +105,7 @@ class App extends Component {
     async function connectwallet() {
       var provider = await web3Modal.connect();
       web3 = new Web3(provider);
-      await provider.request({ method:'eth_requestAccounts'});
+      await provider.request({ method: 'eth_requestAccounts' });
       var accounts = await web3.eth.requestAccounts();
       account = accounts[0];
       document.getElementById('wallet-address').textContent = account;
@@ -303,28 +303,28 @@ class App extends Component {
     }
 
     return (
-      <body class="container py-2 bg-black">
+      <div className="container py-2 bg-black">
         <div className="App nftapp bg-black">
 
-          <nav class="container py-3 bg-black">
-            <div class="container d-flex align-content-center flex-wrap bg-black"> <img src="apotheosis.png" width="" height="38" class="d-inline-block align-top" alt=""></img> 
-              <ul class="nav me-auto align-content-right bg-black">
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="." class="nav-link link-light px-2 active" aria-current="page">Dashboard</a></li>
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="#Vault" class="nav-link link-light px-2">Vault</a></li>
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="#NFT" class="nav-link link-light px-2">NFTs</a></li>
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world" target="_blank" rel="noreferrer" class="nav-link link-light px-2">OSIS</a></li>
+          <nav className="container py-3 bg-black">
+            <div className="container d-flex align-content-center flex-wrap bg-black"> <img src="apotheosis.png" width="" height="38" className="d-inline-block align-top" alt=""></img>
+              <ul className="nav me-auto align-content-right bg-black">
+                <li className="nav-item d-flex align-content-center flex-wrap"><a href="." className="nav-link link-light px-2 active" aria-current="page">Dashboard</a></li>
+                <li className="nav-item d-flex align-content-center flex-wrap"><a href="#Vault" className="nav-link link-light px-2">Vault</a></li>
+                <li className="nav-item d-flex align-content-center flex-wrap"><a href="#NFT" className="nav-link link-light px-2">NFTs</a></li>
+                <li className="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world" target="_blank" rel="noreferrer" className="nav-link link-light px-2">OSIS</a></li>
               </ul>
-              <ul class="nav">
-                <li class="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world/login" target="_blank" rel="noreferrer" class="nav-link link-light px-3">GET OSIS</a></li>
-                <input id="connectbtn" type="button" className="connectbutton" onClick={connectwallet} style={{class: "nav-item d-flex align-content-center flex-wrap"}} value="Connect Your Wallet" />
-                {/* <li class="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world/login" target="_blank" rel="noreferrer" class="nav-link link-light px-3">GET OSIS</a></li> */}
+              <ul className="nav">
+                <li className="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world/login" target="_blank" rel="noreferrer" className="nav-link link-light px-3">GET OSIS</a></li>
+                <input id="connectbtn" type="button" className="connectbutton" onClick={connectwallet} style={{ class: "nav-item d-flex align-content-center flex-wrap" }} value="Connect Your Wallet" />
+                {/* <li className="nav-item d-flex align-content-center flex-wrap"><a href="https://osis.world/login" target="_blank" rel="noreferrer" className="nav-link link-light px-3">GET OSIS</a></li> */}
               </ul>
             </div>
           </nav>
           <div className='container, bg-black'>
             <div className='col, py-4'>
-              <body className='nftminter'>
-                <form>
+              <div className='nftminter'>
+                <div>
                   <div className="row pt-1">
                     <div>
                       <h1 className="pt-1" style={{ fontWeight: "30", color: "#ffffff", fontFamily: "Avenir LT Std" }}>MetaBadge Staking Platform</h1>
@@ -377,45 +377,47 @@ class App extends Component {
                       </div> */}
                   {/* </div> */}
                   {/* </div> */}
-                </form>
-              </body>
+                </div>
+              </div>
             </div>
           </div>
           <div className='col bg-black'>
-            <body className='nftstaker border-0 bg-black'>
-              <form style={{ fontFamily: "Avenir LT Std" }} >
-                <h2 className="pt-2" style={{ fontFamily: "Avenir LT Std", borderRadius: '14px', fontWeight: "400", color: "#ffffff", fontSize: "25px" }}id="Vault">MBG Staking Vault </h2>
+            <div className='nftstaker border-0 bg-black'>
+              <div style={{ fontFamily: "Avenir LT Std" }} >
+                <h2 className="pt-2" style={{ fontFamily: "Avenir LT Std", borderRadius: '14px', fontWeight: "400", color: "#ffffff", fontSize: "25px" }} id="Vault">MBG Staking Vault </h2>
                 <h6 style={{ fontWeight: "300", color: "#ffffff", fontFamily: "Avenir LT Std" }}>First time staking?</h6>
                 <Button className="btn" onClick={enable} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} >Authorize Your Wallet</Button>
                 <div className="row mt-2 px-3 pt-1">
                   <div className="col-sm-4 col-center-block">
-                    <form class="stakingrewards" style={{ borderRadius: "25px", boxShadow: "1px 1px 15px #4ac0e7" }}>
-                      <h5 style={{ color: "#FFFFFF", fontWeight: '300' }}>Your Vault Activity</h5>
+                    <div className="stakingrewards" style={{ borderRadius: "25px", boxShadow: "1px 1px 15px #4ac0e7" }}>
+                      <h5 style={{ color: "#FFFFFF", fontWeight: '300', paddingTop: 15 }}>Your Vault Activity</h5>
                       <h5 style={{ color: "#FFFFFF" }}>Verify Staked Amount</h5>
                       <Button onClick={verify} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} >Verify</Button>
                       <table className='table mt-3 mb-5 px-3 table-dark'>
-                        <tr>
-                          <td style={{ fontSize: "19px" }}>Your Staked NFTs:
-                            <span style={{ backgroundColor: "#ffffff00", fontSize: "21px", color: "#39FF14", fontWeight: "500", textShadow: "1px 1px 2px #000000" }} id='yournfts'></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ fontSize: "19px" }}>Total Staked NFTs:
-                            <span style={{ backgroundColor: "#ffffff00", fontSize: "21px", color: "#39FF14", fontWeight: "500", textShadow: "1px 1px 2px #000000" }} id='stakedbalance'></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ fontSize: "19px" }}>Unstake All Staked NFTs<br></br>
-                            <Button onClick={unstakeall} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} className='mb-3' >Unstake All</Button>
-                          </td>
-                        </tr>
+                        <tbody>
+                          <tr>
+                            <td style={{ fontSize: "19px", background: 'transparent' }}>Your Staked NFTs:
+                              <span style={{ backgroundColor: "#ffffff00", fontSize: "21px", color: "#39FF14", fontWeight: "500", textShadow: "1px 1px 2px #000000" }} id='yournfts'></span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontSize: "19px", background: 'transparent' }}>Total Staked NFTs:
+                              <span style={{ backgroundColor: "#ffffff00", fontSize: "21px", color: "#39FF14", fontWeight: "500", textShadow: "1px 1px 2px #000000" }} id='stakedbalance'></span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ fontSize: "19px", background: 'transparent' }}>Unstake All Staked NFTs<br></br>
+                              <Button onClick={unstakeall} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} className='mb-3' >Unstake All</Button>
+                            </td>
+                          </tr>
+                        </tbody>
                       </table>
-                    </form>
+                    </div>
                   </div>
                   <img className="col-sm-3 col-center-block mb-5 mb-1" src="metabadges.png" />
                   <div className="col-sm-4 col-center-block">
-                    <form className='stakingrewards' style={{ borderRadius: "25px", boxShadow: "1px 1px 15px #4ac0e7", fontFamily: "Avenir LT Std" }}>
-                    <h5 style={{ color: "#FFFFFF", fontWeight: '300' }}>Your Rewards Activity</h5>
+                    <div className='stakingrewards' style={{ borderRadius: "25px", boxShadow: "1px 1px 15px #4ac0e7", fontFamily: "Avenir LT Std" }}>
+                      <h5 style={{ color: "#FFFFFF", fontWeight: '300', paddingTop: 15 }}>Your Rewards Activity</h5>
                       <h5 className="" style={{ color: "#FFFFFF", fontWeight: '300' }}> Staking Rewards</h5>
                       <Button onClick={rewardinfo} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} >Earned MBG Rewards</Button>
                       <div id='earned' style={{ color: "#6db647", marginTop: "10px", fontSize: '25px', fontWeight: '500', textShadow: "1px 1px 2px #000000" }}><p style={{ fontSize: "20px" }}>Earned Tokens</p></div>
@@ -426,11 +428,11 @@ class App extends Component {
                         </div>
                         <Button onClick={claimit} style={{ backgroundColor: "#ffffff10", boxShadow: "1px 1px 5px #4ac0e7" }} className="mb-4">Claim</Button>
                       </div>
-                    </form>
+                    </div>
                   </div>
                 </div>
                 <div className="row px-4 pt-2">
-                  <div class="header">
+                  <div className="header">
                     <div style={{ fontSize: '25px', borderRadius: '14px', color: "#ffffff", fontWeight: "300" }}>MBG NFT Staking Pool Active Rewards</div>
                     <h1>
                     </h1>
@@ -445,66 +447,66 @@ class App extends Component {
                       <tbody>
                         <tr>
                           <td>Standard MetaBadge</td>
-                          <td class="amount" data-test-id="rewards-summary-ads">
-                            <span class="amount">2000</span>&nbsp;<span class="currency">MBG</span>
+                          <td className="amount" data-test-id="rewards-summary-ads">
+                            <span className="amount">2000</span>&nbsp;<span className="currency">MBG</span>
                           </td>
-                          {/* <td class="exchange">
-                            <span class="amount">2</span>&nbsp;<span class="currency">TBD</span>
+                          {/* <td className="exchange">
+                            <span className="amount">2</span>&nbsp;<span className="currency">TBD</span>
                           </td> */}
                         </tr>
                         <tr>
                           <td>Rare MetaBadge</td>
-                          <td class="amount" data-test-id="rewards-summary-ac">
-                            <span class="amount">2000</span>&nbsp;<span class="currency">MBG</span>
+                          <td className="amount" data-test-id="rewards-summary-ac">
+                            <span className="amount">2000</span>&nbsp;<span className="currency">MBG</span>
                           </td>
-                          {/* <td class="exchange"><span class="amount">10</span>&nbsp;<span class="currency">TBD</span>
+                          {/* <td className="exchange"><span className="amount">10</span>&nbsp;<span className="currency">TBD</span>
                           </td> */}
                         </tr>
                         <tr className='stakegoldeffect'>
                           <td>Super Rare MetaBadge</td>
-                          <td class="amount" data-test-id="rewards-summary-one-time"><span class="amount">2000</span>&nbsp;<span class="currency">MBG</span>
+                          <td className="amount" data-test-id="rewards-summary-one-time"><span className="amount">2000</span>&nbsp;<span className="currency">MBG</span>
                           </td>
-                          {/* <td class="exchange">
-                            <span class="amount">TBD or </span>
-                            <span class="currency">TBD</span>
+                          {/* <td className="exchange">
+                            <span className="amount">TBD or </span>
+                            <span className="currency">TBD</span>
                           </td> */}
                         </tr>
                       </tbody>
                     </table>
-                    {/* <div class="header"> */}
-                      {/* <div style={{ fontSize: '25px', borderRadius: '14px', color: "#ffffff", fontWeight: '300' }}>MBG Token Stake Farms</div> */}
-                      {/* <h1> */}
-                      {/* </h1> */}
-                      {/* <table className='table table-bordered table-dark' style={{ borderRadius: '14px', boxShadow: "1px 1px 15px #4ac0e7" }} > */}
-                        {/* <thead className='thead-light'> */}
-                          {/* <tr> */}
-                            {/* <td>MBG Staking Farm Pools</td> */}
-                            {/* <td>Harvest Daily Earnings</td> */}
-                          {/* </tr> */}
-                        {/* </thead> */}
-                        {/* <tbody> */}
-                          {/* <tr> */}
-                            {/* <td>Stake MBG to Earn MBG</td> */}
-                            {/* <td class="amount" data-test-id="rewards-summary-ads"> */}
-                              {/* <span class="amount">0.001</span>&nbsp;<span class="currency">Per Staked MBG</span> */}
-                            {/* </td> */}
-                          {/* </tr> */}
-                          {/* <tr>
+                    {/* <div className="header"> */}
+                    {/* <div style={{ fontSize: '25px', borderRadius: '14px', color: "#ffffff", fontWeight: '300' }}>MBG Token Stake Farms</div> */}
+                    {/* <h1> */}
+                    {/* </h1> */}
+                    {/* <table className='table table-bordered table-dark' style={{ borderRadius: '14px', boxShadow: "1px 1px 15px #4ac0e7" }} > */}
+                    {/* <thead className='thead-light'> */}
+                    {/* <tr> */}
+                    {/* <td>MBG Staking Farm Pools</td> */}
+                    {/* <td>Harvest Daily Earnings</td> */}
+                    {/* </tr> */}
+                    {/* </thead> */}
+                    {/* <tbody> */}
+                    {/* <tr> */}
+                    {/* <td>Stake MBG to Earn MBG</td> */}
+                    {/* <td className="amount" data-test-id="rewards-summary-ads"> */}
+                    {/* <span className="amount">0.001</span>&nbsp;<span className="currency">Per Staked MBG</span> */}
+                    {/* </td> */}
+                    {/* </tr> */}
+                    {/* <tr>
                             <td>Stake MBG to Earn MBG+</td>
-                            <td class="amount" data-test-id="rewards-summary-ac">
-                              <span class="amount">0.005</span>&nbsp;<span class="currency">Per MBG</span>
+                            <td className="amount" data-test-id="rewards-summary-ac">
+                              <span className="amount">0.005</span>&nbsp;<span className="currency">Per MBG</span>
                             </td>
                           </tr> */}
-                        {/* </tbody> */}
-                      {/* </table> */}
+                    {/* </tbody> */}
+                    {/* </table> */}
                     {/* </div> */}
                   </div>
                 </div>
-              </form>
-            </body>
+              </div>
+            </div>
           </div>
 
-          <div className='col mt-3 bg-black'id="NFT">
+          <div className='col mt-3 bg-black' id="NFT">
             <div className='col mt-3 ml-3 bg-black'>
               <img src="polygon.png" width={'20%'}></img>
             </div>
@@ -517,7 +519,7 @@ class App extends Component {
             </div>
           </div>
         </div>
-      </body>
+      </div>
     )
   }
 }
